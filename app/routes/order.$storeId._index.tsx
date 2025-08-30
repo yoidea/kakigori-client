@@ -23,7 +23,6 @@ export default function OrderPage() {
       try {
         const items = await fetchMenu(storeId);
         setMenu(items);
-        if (items[0]) setSelected(items[0].id);
       } catch (e) {
         setErr(e instanceof Error ? e.message : String(e));
       } finally {
