@@ -2,6 +2,15 @@
 
 かき氷注文システムのサンプルです。
 
+`http://localhost:5173/order/<storeId>`
+<img width="1125" height="2436" alt="Screen Shot 2025-08-31 at 00 19 07" src="https://github.com/user-attachments/assets/ead87b81-a895-4ba2-bbfc-d1673442ea96" />
+<img width="1125" height="2436" alt="Screen Shot 2025-08-31 at 00 19 12" src="https://github.com/user-attachments/assets/b97efb2d-c492-4171-b57a-421a54b955db" />
+
+`http://localhost:5173/order/<storeId>/receipt/<orderId>`
+<img width="1125" height="2436" alt="Screen Shot 2025-08-31 at 00 19 16" src="https://github.com/user-attachments/assets/716e7047-3e7b-4ded-bead-c3f4ac4e6339" />
+
+
+
 ---
 
 ## Index
