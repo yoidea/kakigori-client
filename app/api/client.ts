@@ -1,10 +1,11 @@
+export type OrderStatus = "pending" | "waitingPickup" | "completed";
 export type MenuItem = { id: string; name: string; description?: string };
 export type OrderResponse = {
   id: string;
   menu_item_id: string;
   menu_name: string;
+  status: OrderStatus;
   order_number: number;
-  status?: string;
 };
 export type ApiError = { error: string; message: string };
 
@@ -41,15 +42,10 @@ export async function fetchOrderById(
   storeId: string,
   orderId: string,
 ): Promise<OrderResponse> {
-  const res = await fetch(`${API_BASE}/v1/stores/${storeId}/orders`);
+  const res = await fetch(`${API_BASE}/v1/stores/${storeId}/orders/${orderId}`);
   if (!res.ok) {
     const data = (await res.json().catch(() => null)) as ApiError | null;
     throw new Error(data?.message || `Order fetch failed (${res.status})`);
   }
-  const data = (await res.json()) as { orders?: OrderResponse[] };
-  const targetOrder = (data.orders ?? []).find((o) => o.id === orderId);
-  if (!targetOrder) {
-    throw new Error("Order not found");
-  }
-  return targetOrder;
+  return res.json();
 }
