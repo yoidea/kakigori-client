@@ -2,7 +2,7 @@ import type { OrderResponse } from "../api/client";
 
 const STATUS_BADGE: Record<
   OrderResponse["status"],
-  { label: string; badge: string }
+  { label: string; color: string }
 > = {
   pending: {
     label: "準備中",

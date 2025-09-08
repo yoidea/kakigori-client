@@ -14,6 +14,11 @@ export default function ReceiptPage() {
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!storeId || !orderId) {
+      setErr("URLが不正です");
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setErr(null);
     (async () => {
@@ -55,7 +60,7 @@ export default function ReceiptPage() {
         </div>
       ) : (
         <>
-          <SuccessCard order={order} />
+          {order && <SuccessCard order={order} />}
           <a
             href={`/order/${storeId}`}
             className="mt-4 block text-center w-full rounded-2xl border border-gray-300 dark:border-gray-700 py-3 font-semibold"

@@ -33,6 +33,7 @@ export default function OrderPage() {
 
   // 送信ボタンクリックで注文の送信
   const handleOrder = async () => {
+    if (!storeId || !selected) return;
     setSubmitting(true);
     setErr(null);
     try {
