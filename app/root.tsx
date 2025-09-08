@@ -20,7 +20,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
         <title>かき氷注文システム</title>
       </head>
-      <body class="bg-white text-gray-900 dark:bg-zinc-900 dark:text-gray-100">
+      <body className="bg-white text-gray-900 dark:bg-zinc-900 dark:text-gray-100">
         {children}
         <ScrollRestoration />
         <Scripts />
