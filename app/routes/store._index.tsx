@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import AdminOrdersBoard from "../components/AdminOrdersBoard";
-import StoreIdForm, { getStoredStoreId, clearStoredStoreId } from "../components/StoreIdForm";
+import StoreIdForm, {
+  getStoredStoreId,
+  clearStoredStoreId,
+} from "../components/StoreIdForm";
 
 const STORAGE_KEY = "kakigori.storeId";
 
@@ -34,6 +37,7 @@ export default function StorePage() {
           </div>
           <div className="mt-2 flex justify-center">
             <button
+              type="button"
               className="rounded-2xl border border-gray-300 dark:border-gray-700 px-3 py-1 text-sm"
               onClick={logout}
             >

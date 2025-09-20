@@ -1,7 +1,14 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import type { OrderResponse, OrderStatus } from "../api/client";
-import { completeOrder, fetchOrders, updateOrderToWaitingPickup } from "../api/client";
-import { useOrderDragAndDrop, defaultAllow } from "../hooks/useOrderDragAndDrop";
+import {
+  completeOrder,
+  fetchOrders,
+  updateOrderToWaitingPickup,
+} from "../api/client";
+import {
+  useOrderDragAndDrop,
+  defaultAllow,
+} from "../hooks/useOrderDragAndDrop";
 import { useOrderSelection } from "../hooks/useOrderSelection";
 import { AdminOrdersColumn } from "./AdminOrdersColumn";
 import ErrorCard from "./ErrorCard";
@@ -11,30 +18,35 @@ type Props = {
   pollMs?: number;
 };
 
-export default function AdminOrdersBoard({ storeId, pollMs = 10000000 }: Props) {
+export default function AdminOrdersBoard({
+  storeId,
+  pollMs = 10000000,
+}: Props) {
   const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
-  const { selected, toggle, selectAll, clear, isAllSelected } = useOrderSelection();
+  const { selected, toggle, selectAll, clear, isAllSelected } =
+    useOrderSelection();
 
-  const { bindCard, bindColumn, highlight, ghostPos, dragging } = useOrderDragAndDrop({
-    allow: defaultAllow,
-    onDropTransition: async (orderId, from, to) => {
-      try {
-        if (from === to) return;
-        if (to === "waitingPickup" && from === "pending") {
-          await updateOrderToWaitingPickup(storeId, orderId);
-        } else if (to === "completed" && from === "waitingPickup") {
-          await completeOrder(storeId, orderId);
+  const { bindCard, bindColumn, highlight, ghostPos, dragging } =
+    useOrderDragAndDrop({
+      allow: defaultAllow,
+      onDropTransition: async (orderId, from, to) => {
+        try {
+          if (from === to) return;
+          if (to === "waitingPickup" && from === "pending") {
+            await updateOrderToWaitingPickup(storeId, orderId);
+          } else if (to === "completed" && from === "waitingPickup") {
+            await completeOrder(storeId, orderId);
+          }
+          await load();
+        } catch (e) {
+          setErr(e instanceof Error ? e.message : String(e));
         }
-        await load();
-      } catch (e) {
-        setErr(e instanceof Error ? e.message : String(e));
-      }
-    },
-  });
+      },
+    });
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       setErr(null);
       const list = await fetchOrders(storeId);
@@ -44,21 +56,19 @@ export default function AdminOrdersBoard({ storeId, pollMs = 10000000 }: Props) 
     } finally {
       setLoading(false);
     }
-  }
-
-  useEffect(() => {
-    setLoading(true);
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storeId]);
 
   useEffect(() => {
+    setLoading(true);
+    void load();
+  }, [load]);
+
+  useEffect(() => {
     const id = setInterval(() => {
-      load();
+      void load();
     }, pollMs);
     return () => clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [storeId, pollMs]);
+  }, [pollMs, load]);
 
   const grouped = useMemo(() => {
     const map: Record<OrderStatus, OrderResponse[]> = {
@@ -73,15 +83,21 @@ export default function AdminOrdersBoard({ storeId, pollMs = 10000000 }: Props) 
     return map;
   }, [orders]);
 
-  const handleToggleAll = useCallback((status: OrderStatus, orders: OrderResponse[]) => {
-    if (isAllSelected(status, orders)) clear(status); else selectAll(status, orders);
-  }, [isAllSelected, clear, selectAll]);
+  const handleToggleAll = useCallback(
+    (status: OrderStatus, orders: OrderResponse[]) => {
+      if (isAllSelected(status, orders)) clear(status);
+      else selectAll(status, orders);
+    },
+    [isAllSelected, clear, selectAll],
+  );
 
   const bulkToWaiting = async () => {
     const ids = Array.from(selected.pending);
     if (ids.length === 0) return;
     try {
-      await Promise.all(ids.map((id) => updateOrderToWaitingPickup(storeId, id)));
+      await Promise.all(
+        ids.map((id) => updateOrderToWaitingPickup(storeId, id)),
+      );
       clear("pending");
       await load();
     } catch (e) {
@@ -107,6 +123,7 @@ export default function AdminOrdersBoard({ storeId, pollMs = 10000000 }: Props) 
         <h2 className="text-xl font-semibold">注文管理</h2>
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={bulkToWaiting}
             disabled={selected.pending.size === 0}
             className="rounded-2xl bg-blue-600 text-white px-3 py-2 text-sm font-semibold disabled:opacity-50"
@@ -114,6 +131,7 @@ export default function AdminOrdersBoard({ storeId, pollMs = 10000000 }: Props) 
             呼出にする ({selected.pending.size})
           </button>
           <button
+            type="button"
             onClick={bulkComplete}
             disabled={selected.waitingPickup.size === 0}
             className="rounded-2xl bg-emerald-600 text-white px-3 py-2 text-sm font-semibold disabled:opacity-50"
@@ -129,25 +147,27 @@ export default function AdminOrdersBoard({ storeId, pollMs = 10000000 }: Props) 
         <ErrorCard title="注文一覧の取得に失敗しました" message={err} />
       ) : (
         <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-          {(["pending", "waitingPickup", "completed"] as OrderStatus[]).map((status) => {
-            const ordersForStatus = grouped[status];
-            return (
-              <AdminOrdersColumn
-                key={status}
-                status={status}
-                title={statusLabel(status)}
-                orders={ordersForStatus}
-                selected={selected[status]}
-                onToggle={toggle}
-                onToggleAll={handleToggleAll}
-                bindColumn={bindColumn}
-                bindCard={bindCard}
-                highlight={highlight}
-                showBulkToggle={status !== 'completed'}
-                isAllSelected={isAllSelected(status, ordersForStatus)}
-              />
-            );
-          })}
+          {(["pending", "waitingPickup", "completed"] as OrderStatus[]).map(
+            (status) => {
+              const ordersForStatus = grouped[status];
+              return (
+                <AdminOrdersColumn
+                  key={status}
+                  status={status}
+                  title={statusLabel(status)}
+                  orders={ordersForStatus}
+                  selected={selected[status]}
+                  onToggle={toggle}
+                  onToggleAll={handleToggleAll}
+                  bindColumn={bindColumn}
+                  bindCard={bindCard}
+                  highlight={highlight}
+                  showBulkToggle={status !== "completed"}
+                  isAllSelected={isAllSelected(status, ordersForStatus)}
+                />
+              );
+            },
+          )}
         </div>
       )}
       {dragging && ghostPos && dragging.rect && (
@@ -181,10 +201,20 @@ function statusLabel(s: OrderStatus) {
   }
 }
 
-
-function GhostOrderNumber({ orders, draggingId }: { orders: OrderResponse[]; draggingId: string }) {
+function GhostOrderNumber({
+  orders,
+  draggingId,
+}: {
+  orders: OrderResponse[];
+  draggingId: string;
+}) {
   const order = orders.find((o) => o.id === draggingId);
-  if (!order) return <span className="text-3xl font-black tracking-tight text-blue-600">...</span>;
+  if (!order)
+    return (
+      <span className="text-3xl font-black tracking-tight text-blue-600">
+        ...
+      </span>
+    );
   return (
     <span className="text-4xl font-black tracking-tight text-blue-600">
       {order.order_number}

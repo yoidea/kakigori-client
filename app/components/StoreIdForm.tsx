@@ -69,7 +69,9 @@ export default function StoreIdForm({
   );
 }
 
-export function getStoredStoreId(storageKey: string = DEFAULT_KEY): string | null {
+export function getStoredStoreId(
+  storageKey: string = DEFAULT_KEY,
+): string | null {
   try {
     return localStorage.getItem(storageKey);
   } catch {

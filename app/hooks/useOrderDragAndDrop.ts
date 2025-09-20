@@ -9,13 +9,19 @@ export type DraggingOrder = {
 };
 
 type Options = {
-  onDropTransition: (orderId: string, from: OrderStatus, to: OrderStatus) => void | Promise<void>;
+  onDropTransition: (
+    orderId: string,
+    from: OrderStatus,
+    to: OrderStatus,
+  ) => void | Promise<void>;
   allow?: (from: OrderStatus, to: OrderStatus) => boolean;
 };
 
 export function useOrderDragAndDrop({ onDropTransition, allow }: Options) {
   const [dragging, setDragging] = useState<DraggingOrder | null>(null);
-  const [ghostPos, setGhostPos] = useState<{ x: number; y: number } | null>(null);
+  const [ghostPos, setGhostPos] = useState<{ x: number; y: number } | null>(
+    null,
+  );
   const overStatus = useRef<OrderStatus | null>(null);
   const [highlight, setHighlight] = useState<OrderStatus | null>(null);
   const longPressTimer = useRef<number | null>(null);
@@ -63,7 +69,11 @@ export function useOrderDragAndDrop({ onDropTransition, allow }: Options) {
 
   const onPointerUp = () => {
     clearLongPress();
-    if (dragging && overStatus.current && overStatus.current !== dragging.from) {
+    if (
+      dragging &&
+      overStatus.current &&
+      overStatus.current !== dragging.from
+    ) {
       if (!allow || allow(dragging.from, overStatus.current)) {
         void onDropTransition(dragging.id, dragging.from, overStatus.current);
       }
@@ -77,9 +87,12 @@ export function useOrderDragAndDrop({ onDropTransition, allow }: Options) {
   const onPointerMove = (e: React.PointerEvent) => {
     if (!dragging || !longPressTriggered.current) return;
     setGhostPos({ x: e.clientX, y: e.clientY });
-    const el = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
+    const el = document.elementFromPoint(
+      e.clientX,
+      e.clientY,
+    ) as HTMLElement | null;
     if (!el) return;
-    const col = el.closest<HTMLElement>('[data-order-column-status]');
+    const col = el.closest<HTMLElement>("[data-order-column-status]");
     if (col) {
       const status = col.dataset.orderColumnStatus as OrderStatus;
       overStatus.current = status;
@@ -101,9 +114,11 @@ export function useOrderDragAndDrop({ onDropTransition, allow }: Options) {
   });
 
   const bindColumn = (status: OrderStatus) => ({
-    'data-order-column-status': status,
-    className: highlight === status ?
-      'ring-4 ring-blue-400 ring-offset-2 ring-offset-transparent transition' : undefined,
+    "data-order-column-status": status,
+    className:
+      highlight === status
+        ? "ring-4 ring-blue-400 ring-offset-2 ring-offset-transparent transition"
+        : undefined,
   });
 
   const isDragging = !!dragging;
@@ -113,7 +128,7 @@ export function useOrderDragAndDrop({ onDropTransition, allow }: Options) {
 
 export function defaultAllow(from: OrderStatus, to: OrderStatus) {
   return (
-    (from === 'pending' && to === 'waitingPickup') ||
-    (from === 'waitingPickup' && to === 'completed')
+    (from === "pending" && to === "waitingPickup") ||
+    (from === "waitingPickup" && to === "completed")
   );
 }

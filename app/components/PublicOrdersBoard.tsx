@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import type { OrderResponse, OrderStatus } from "../api/client";
 import { fetchOrders } from "../api/client";
 import ErrorCard from "./ErrorCard";
@@ -8,12 +8,15 @@ type Props = {
   pollMs?: number;
 };
 
-export default function PublicOrdersBoard({ storeId, pollMs = 10000000 }: Props) {
+export default function PublicOrdersBoard({
+  storeId,
+  pollMs = 10000000,
+}: Props) {
   const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       setErr(null);
       const list = await fetchOrders(storeId);
@@ -23,21 +26,19 @@ export default function PublicOrdersBoard({ storeId, pollMs = 10000000 }: Props)
     } finally {
       setLoading(false);
     }
-  }
-
-  useEffect(() => {
-    setLoading(true);
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storeId]);
 
   useEffect(() => {
+    setLoading(true);
+    void load();
+  }, [load]);
+
+  useEffect(() => {
     const id = setInterval(() => {
-      load();
+      void load();
     }, pollMs);
     return () => clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [storeId, pollMs]);
+  }, [pollMs, load]);
 
   const grouped = useMemo(() => {
     const map: Record<OrderStatus, OrderResponse[]> = {
@@ -63,7 +64,12 @@ export default function PublicOrdersBoard({ storeId, pollMs = 10000000 }: Props)
       ) : (
         <div className="mt-4 flex flex-row gap-4 w-full">
           {statuses.map((status) => (
-            <Column key={status} status={status} title={statusLabel(status)} orders={grouped[status]} />
+            <Column
+              key={status}
+              status={status}
+              title={statusLabel(status)}
+              orders={grouped[status]}
+            />
           ))}
         </div>
       )}
@@ -92,16 +98,32 @@ function Column({
   status: OrderStatus;
 }) {
   return (
-    <div className={`rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden bg-white dark:bg-zinc-900 ` + (status === "pending" ? "basis-1/3" : "basis-2/3")}>
-      <div className="px-4 py-2 font-semibold bg-gray-50 dark:bg-zinc-800">{title}</div>
-      <ul className={`p-3 grid gap-3 ` + (status === "pending" ? "grid-cols-1" : "grid-cols-2")}>
+    <div
+      className={
+        `rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden bg-white dark:bg-zinc-900 ` +
+        (status === "pending" ? "basis-1/3" : "basis-2/3")
+      }
+    >
+      <div className="px-4 py-2 font-semibold bg-gray-50 dark:bg-zinc-800">
+        {title}
+      </div>
+      <ul
+        className={
+          `p-3 grid gap-3 ` +
+          (status === "pending" ? "grid-cols-1" : "grid-cols-2")
+        }
+      >
         {orders.length === 0 ? (
-          <li className="col-span-full text-center text-gray-500 text-sm py-6">なし</li>
+          <li className="col-span-full text-center text-gray-500 text-sm py-6">
+            なし
+          </li>
         ) : (
           orders.map((o) => (
             <li key={o.id}>
               <div className="rounded-2xl border border-gray-200 dark:border-gray-700 p-4 text-center shadow-sm">
-                <div className="text-4xl font-black tracking-tight">{o.order_number}</div>
+                <div className="text-4xl font-black tracking-tight">
+                  {o.order_number}
+                </div>
               </div>
             </li>
           ))

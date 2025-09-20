@@ -5,7 +5,11 @@ export type SelectionMap = Record<OrderStatus, Set<string>>;
 
 export function useOrderSelection(initial?: SelectionMap) {
   const [selected, setSelected] = useState<SelectionMap>(
-    initial || { pending: new Set(), waitingPickup: new Set(), completed: new Set() },
+    initial || {
+      pending: new Set(),
+      waitingPickup: new Set(),
+      completed: new Set(),
+    },
   );
 
   const toggle = useCallback((status: OrderStatus, id: string) => {
@@ -17,16 +21,23 @@ export function useOrderSelection(initial?: SelectionMap) {
     });
   }, []);
 
-  const selectAll = useCallback((status: OrderStatus, orders: OrderResponse[]) => {
-    const ids = orders.map((o) => o.id);
-    setSelected((prev) => ({ ...prev, [status]: new Set(ids) }));
-  }, []);
+  const selectAll = useCallback(
+    (status: OrderStatus, orders: OrderResponse[]) => {
+      const ids = orders.map((o) => o.id);
+      setSelected((prev) => ({ ...prev, [status]: new Set(ids) }));
+    },
+    [],
+  );
 
   const clear = useCallback((status?: OrderStatus) => {
     if (status) {
       setSelected((prev) => ({ ...prev, [status]: new Set() }));
     } else {
-      setSelected({ pending: new Set(), waitingPickup: new Set(), completed: new Set() });
+      setSelected({
+        pending: new Set(),
+        waitingPickup: new Set(),
+        completed: new Set(),
+      });
     }
   }, []);
 

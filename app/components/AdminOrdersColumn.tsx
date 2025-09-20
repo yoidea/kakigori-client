@@ -1,5 +1,8 @@
 import type { OrderResponse, OrderStatus } from "../api/client";
 
+type BindColumnResult = { [key: string]: unknown; className?: string };
+type BindCardResult = { [key: string]: unknown };
+
 export type ColumnProps = {
   title: string;
   orders: OrderResponse[];
@@ -7,8 +10,8 @@ export type ColumnProps = {
   selected: Set<string>;
   onToggle: (status: OrderStatus, id: string) => void;
   onToggleAll: (status: OrderStatus, orders: OrderResponse[]) => void;
-  bindColumn: (status: OrderStatus) => any;
-  bindCard: (orderId: string, from: OrderStatus) => any;
+  bindColumn: (status: OrderStatus) => BindColumnResult;
+  bindCard: (orderId: string, from: OrderStatus) => BindCardResult;
   highlight: OrderStatus | null;
   showBulkToggle: boolean;
   isAllSelected: boolean;
@@ -40,6 +43,7 @@ export function AdminOrdersColumn({
         {showBulkToggle && orders.length > 0 && (
           <div className="flex items-center text-xs">
             <button
+              type="button"
               className="rounded-xl border border-gray-300 dark:border-gray-600 px-2 py-0.5"
               onClick={() => onToggleAll(status, orders)}
             >
@@ -50,7 +54,9 @@ export function AdminOrdersColumn({
       </div>
       <ul className="p-3 flex flex-col gap-3">
         {orders.length === 0 ? (
-          <li className="col-span-2 text-center text-gray-500 text-sm py-6">なし</li>
+          <li className="col-span-2 text-center text-gray-500 text-sm py-6">
+            なし
+          </li>
         ) : (
           orders.map((o) => (
             <li key={o.id} className="relative" {...bindCard(o.id, status)}>
@@ -66,8 +72,12 @@ export function AdminOrdersColumn({
                 </label>
               )}
               <div className="order-card-shell rounded-2xl border border-gray-200 dark:border-gray-700 p-4 text-center shadow-sm active:scale-[0.98] select-none touch-none">
-                <div className="text-4xl font-black tracking-tight">{o.order_number}</div>
-                <div className="mt-2 text-sm text-gray-700 truncate">{o.menu_name}</div>
+                <div className="text-4xl font-black tracking-tight">
+                  {o.order_number}
+                </div>
+                <div className="mt-2 text-sm text-gray-700 truncate">
+                  {o.menu_name}
+                </div>
               </div>
             </li>
           ))
