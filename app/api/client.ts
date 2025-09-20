@@ -49,3 +49,53 @@ export async function fetchOrderById(
   }
   return res.json();
 }
+
+// 管理画面・公開画面向け：注文一覧の取得（ステータスでの絞り込み可）
+export async function fetchOrders(
+  storeId: string,
+  status?: OrderStatus,
+): Promise<OrderResponse[]> {
+  const url = new URL(`${API_BASE}/v1/stores/${storeId}/orders`);
+  if (status) url.searchParams.set("status", status);
+  const res = await fetch(url);
+  if (!res.ok) {
+    const data = (await res.json().catch(() => null)) as ApiError | null;
+    throw new Error(data?.message || `Orders fetch failed (${res.status})`);
+  }
+  const data = (await res.json()) as { orders?: OrderResponse[] };
+  return data.orders ?? [];
+}
+
+// 管理画面：pending -> waitingPickup
+export async function updateOrderToWaitingPickup(
+  storeId: string,
+  orderId: string,
+): Promise<OrderResponse> {
+  const res = await fetch(
+    `${API_BASE}/v1/stores/${storeId}/orders/${orderId}/waiting-pickup`,
+    { method: "POST" },
+  );
+  if (!res.ok) {
+    const data = (await res.json().catch(() => null)) as ApiError | null;
+    throw new Error(
+      data?.message || `Update to waitingPickup failed (${res.status})`,
+    );
+  }
+  return res.json();
+}
+
+// 管理画面：waitingPickup -> completed
+export async function completeOrder(
+  storeId: string,
+  orderId: string,
+): Promise<OrderResponse> {
+  const res = await fetch(
+    `${API_BASE}/v1/stores/${storeId}/orders/${orderId}/complete`,
+    { method: "POST" },
+  );
+  if (!res.ok) {
+    const data = (await res.json().catch(() => null)) as ApiError | null;
+    throw new Error(data?.message || `Complete order failed (${res.status})`);
+  }
+  return res.json();
+}
