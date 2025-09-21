@@ -71,7 +71,7 @@ export function AdminOrdersColumn({
                   />
                 </label>
               )}
-              <div className="order-card-shell rounded-2xl border border-gray-200 dark:border-gray-700 p-4 text-center shadow-sm active:scale-[0.98] select-none touch-none">
+              <div className="order-card-shell rounded-2xl border border-gray-200 dark:border-gray-700 py-2 px-4 text-center shadow-sm active:scale-[0.98] select-none touch-none">
                 <div className="text-4xl font-black tracking-tight">
                   {o.order_number}
                 </div>

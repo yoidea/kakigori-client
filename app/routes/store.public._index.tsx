@@ -21,7 +21,7 @@ export default function StorePublicPage() {
   if (!storeId) return null;
 
   return (
-    <main className="mx-auto max-w-4xl p-4 min-h-[100dvh] flex flex-col">
+    <main className="mx-auto max-w-6xl p-4 min-h-[100dvh] flex flex-col">
       <PublicOrdersBoard storeId={storeId} />
     </main>
   );

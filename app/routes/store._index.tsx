@@ -20,7 +20,7 @@ export default function StorePage() {
   };
 
   return (
-    <main className="mx-auto max-w-4xl p-4 min-h-[100dvh] flex flex-col">
+    <main className="mx-auto max-w-6xl p-4 min-h-[100dvh] flex flex-col">
       <h1 className="text-2xl font-bold text-center">店舗ダッシュボード</h1>
       {!storeId ? (
         <StoreIdForm

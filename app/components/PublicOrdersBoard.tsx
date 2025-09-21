@@ -101,16 +101,18 @@ function Column({
     <div
       className={
         `rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden bg-white dark:bg-zinc-900 ` +
-        (status === "pending" ? "basis-1/3" : "basis-2/3")
+        (status === "pending" ? "basis-1/5" : "basis-4/5")
       }
     >
-      <div className="px-4 py-2 font-semibold bg-gray-50 dark:bg-zinc-800">
+      <div
+        className={`text-5xl px-8 py-4 font-semibold bg-gray-50 dark:bg-zinc-800 ${status === "pending" ? "" : ""}`}
+      >
         {title}
       </div>
       <ul
         className={
           `p-3 grid gap-3 ` +
-          (status === "pending" ? "grid-cols-1" : "grid-cols-2")
+          (status === "pending" ? "grid-cols-1" : "grid-cols-3")
         }
       >
         {orders.length === 0 ? (
@@ -120,8 +122,8 @@ function Column({
         ) : (
           orders.map((o) => (
             <li key={o.id}>
-              <div className="rounded-2xl border border-gray-200 dark:border-gray-700 p-4 text-center shadow-sm">
-                <div className="text-4xl font-black tracking-tight">
+              <div className="rounded-2xl border border-gray-200 dark:border-gray-700 p-6 text-center">
+                <div className="text-5xl font-black tracking-tight">
                   {o.order_number}
                 </div>
               </div>
