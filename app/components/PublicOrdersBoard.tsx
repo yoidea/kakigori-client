@@ -10,7 +10,7 @@ type Props = {
 
 export default function PublicOrdersBoard({
   storeId,
-  pollMs = 10000000,
+  pollMs = 2000,
 }: Props) {
   const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [loading, setLoading] = useState(true);
