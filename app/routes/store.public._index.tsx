@@ -23,6 +23,11 @@ export default function StorePublicPage() {
   return (
     <main className="mx-auto max-w-6xl p-4 min-h-[100dvh] flex flex-col">
       <PublicOrdersBoard storeId={storeId} />
+      <img
+        src="/icon.jpg"
+        alt="アイコン"
+        className="absolute right-8 bottom-8 w-64 h-64"
+      />
     </main>
   );
 }

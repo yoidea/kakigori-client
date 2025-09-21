@@ -75,7 +75,7 @@ export function AdminOrdersColumn({
                 <div className="text-4xl font-black tracking-tight">
                   {o.order_number}
                 </div>
-                <div className="mt-2 text-sm text-gray-700 truncate">
+                <div className="mt-2 text-sm text-gray-700 dark:text-gray-300 truncate">
                   {o.menu_name}
                 </div>
               </div>

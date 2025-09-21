@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import type { OrderResponse, OrderStatus } from "../api/client";
+import { ORDER_STATUS_LABEL } from "../constants/orderStatus";
 import {
   completeOrder,
   fetchOrders,
@@ -18,10 +19,7 @@ type Props = {
   pollMs?: number;
 };
 
-export default function AdminOrdersBoard({
-  storeId,
-  pollMs = 4000,
-}: Props) {
+export default function AdminOrdersBoard({ storeId, pollMs = 4000 }: Props) {
   const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -154,7 +152,7 @@ export default function AdminOrdersBoard({
                 <AdminOrdersColumn
                   key={status}
                   status={status}
-                  title={statusLabel(status)}
+                  title={ORDER_STATUS_LABEL[status]}
                   orders={ordersForStatus}
                   selected={selected[status]}
                   onToggle={toggle}
@@ -188,17 +186,6 @@ export default function AdminOrdersBoard({
       )}
     </section>
   );
-}
-
-function statusLabel(s: OrderStatus) {
-  switch (s) {
-    case "pending":
-      return "準備中";
-    case "waitingPickup":
-      return "呼出中";
-    case "completed":
-      return "受渡完了";
-  }
 }
 
 function GhostOrderNumber({

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import type { OrderResponse, OrderStatus } from "../api/client";
+import { ORDER_STATUS_LABEL } from "../constants/orderStatus";
 import { fetchOrders } from "../api/client";
 import ErrorCard from "./ErrorCard";
 
@@ -8,10 +9,7 @@ type Props = {
   pollMs?: number;
 };
 
-export default function PublicOrdersBoard({
-  storeId,
-  pollMs = 2000,
-}: Props) {
+export default function PublicOrdersBoard({ storeId, pollMs = 2000 }: Props) {
   const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -62,12 +60,12 @@ export default function PublicOrdersBoard({
       ) : err ? (
         <ErrorCard title="注文状況の取得に失敗しました" message={err} />
       ) : (
-        <div className="mt-4 flex flex-row gap-4 w-full">
+        <div className="mt-4 flex flex-row w-full">
           {statuses.map((status) => (
             <Column
               key={status}
               status={status}
-              title={statusLabel(status)}
+              title={ORDER_STATUS_LABEL[status]}
               orders={grouped[status]}
             />
           ))}
@@ -75,17 +73,6 @@ export default function PublicOrdersBoard({
       )}
     </section>
   );
-}
-
-function statusLabel(s: OrderStatus) {
-  switch (s) {
-    case "pending":
-      return "準備中";
-    case "waitingPickup":
-      return "呼出中";
-    case "completed":
-      return "受渡完了";
-  }
 }
 
 function Column({
@@ -100,12 +87,17 @@ function Column({
   return (
     <div
       className={
-        `rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden bg-white dark:bg-zinc-900 ` +
+        ` overflow-hidden bg-white dark:bg-zinc-900 ` +
         (status === "pending" ? "basis-1/5" : "basis-4/5")
       }
     >
       <div
-        className={`text-5xl px-8 py-4 font-semibold bg-gray-50 dark:bg-zinc-800 ${status === "pending" ? "" : ""}`}
+        className={
+          `text-5xl px-8 py-4 font-semibold flex items-center ` +
+          (status === "pending"
+            ? "bg-gray-50 dark:bg-zinc-800"
+            : "bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-200")
+        }
       >
         {title}
       </div>
@@ -122,8 +114,22 @@ function Column({
         ) : (
           orders.map((o) => (
             <li key={o.id}>
-              <div className="rounded-2xl border border-gray-200 dark:border-gray-700 p-6 text-center">
-                <div className="text-5xl font-black tracking-tight">
+              <div
+                className={
+                  `rounded-2xl border p-6 text-center ` +
+                  (status === "pending"
+                    ? "border-gray-200 dark:border-gray-700 bg-white dark:bg-zinc-900"
+                    : "border-amber-300 dark:border-amber-600 bg-white dark:bg-zinc-900")
+                }
+              >
+                <div
+                  className={
+                    `text-5xl font-black tracking-tight ` +
+                    (status === "waitingPickup"
+                      ? "text-7xl text-amber-700 dark:text-amber-200"
+                      : "")
+                  }
+                >
                   {o.order_number}
                 </div>
               </div>
