@@ -11,7 +11,7 @@ import {
   defaultAllow,
 } from "../../hooks/useOrderDragAndDrop";
 import { useOrderSelection } from "../../hooks/useOrderSelection";
-import { AdminOrdersColumn } from "../AdminOrdersColumn";
+import { AdminOrdersColumn } from "./AdminOrdersColumn";
 import ErrorCard from "../ui/ErrorCard";
 
 type Props = {
