@@ -2,8 +2,8 @@ import { useNavigate } from "react-router";
 import { useParams } from "react-router";
 import { useEffect, useState } from "react";
 import { fetchMenu, createOrder, type MenuItem } from "../api/client";
-import Placeholder from "../components/Placeholder";
-import ErrorCard from "../components/ErrorCard";
+import Placeholder from "../components/ui/Placeholder";
+import ErrorCard from "../components/ui/ErrorCard";
 
 export default function OrderPage() {
   const navigate = useNavigate();

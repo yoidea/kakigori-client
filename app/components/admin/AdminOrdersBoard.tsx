@@ -1,18 +1,18 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
-import type { OrderResponse, OrderStatus } from "../api/client";
-import { ORDER_STATUS_LABEL } from "../constants/orderStatus";
+import type { OrderResponse, OrderStatus } from "../../api/client";
+import { ORDER_STATUS_LABEL } from "../../constants/orderStatus";
 import {
   completeOrder,
   fetchOrders,
   updateOrderToWaitingPickup,
-} from "../api/client";
+} from "../../api/client";
 import {
   useOrderDragAndDrop,
   defaultAllow,
-} from "../hooks/useOrderDragAndDrop";
-import { useOrderSelection } from "../hooks/useOrderSelection";
-import { AdminOrdersColumn } from "./AdminOrdersColumn";
-import ErrorCard from "./ErrorCard";
+} from "../../hooks/useOrderDragAndDrop";
+import { useOrderSelection } from "../../hooks/useOrderSelection";
+import { AdminOrdersColumn } from "../AdminOrdersColumn";
+import ErrorCard from "../ui/ErrorCard";
 
 type Props = {
   storeId: string;
