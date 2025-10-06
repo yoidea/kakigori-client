@@ -12,6 +12,7 @@ type MenuSelectionProps = {
   onSubmit: () => void;
   submitting: boolean;
   orderError: string | null;
+  worstUIEnabled: boolean;
 };
 
 export default function MenuSelection({
@@ -48,42 +49,67 @@ export default function MenuSelection({
                 メニューがありません
               </p>
             ) : (
-              menu.map((item) => (
-                <label
-                  key={item.id}
-                  className={`flex items-start gap-3 border p-4 transition active:scale-[0.99] ${
-                    selectedMenuId === item.id
-                      ? "cursor-pointer border-blue-600 ring-2 ring-blue-600/20"
-                      : "cursor-pointer border-gray-300"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="menu"
-                    className="mt-1 h-5 w-5 accent-blue-600"
-                    checked={selectedMenuId === item.id}
-                    onChange={() => onSelect(item.id)}
-                  />
-                  <div className="flex-1">
-                    <div className="font-semibold">{item.name.split(" ")[0]}<span className="text-worst-accent font-bold">{" "+item.name.split(" ")[1].split("味")[0]}</span>味</div>
-                    {item.description && (
+              menu.map((item) => {
+                const [primaryLabel = item.name, secondaryRaw = ""] = item.name.split(" ");
+                const flavor = secondaryRaw.split("味")[0] ?? "";
+                const accentLabel = flavor ? ` ${flavor}` : "";
+
+                const highlightedDescription = (() => {
+                  if (!item.description || !flavor) return item.description;
+                  if (!item.description.includes(flavor)) return item.description;
+                  const parts = item.description.split(flavor);
+                  return parts.flatMap((part, index) =>
+                    index === parts.length - 1
+                      ? [part]
+                      : [
+                          part,
+                          (
+                            <span
+                              key={`${item.id}-desc-${index}`}
+                              className="text-worst-accent font-bold"
+                            >
+                              {flavor}
+                            </span>
+                          ),
+                        ]
+                  );
+                })();
+
+                return (
+                  <label
+                    key={item.id}
+                    className={`flex items-start gap-3 border p-4 transition active:scale-[0.99] ${
+                      selectedMenuId === item.id
+                        ? "cursor-pointer border-blue-600 ring-2 ring-blue-600/20"
+                        : "cursor-pointer border-gray-300"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="menu"
+                      className="mt-1 h-5 w-5 accent-blue-600"
+                      checked={selectedMenuId === item.id}
+                      onChange={() => onSelect(item.id)}
+                    />
+                    <div className="flex-1">
+                      <div className="font-semibold">
+                        {primaryLabel}
+                        {flavor && (
+                          <span className="text-worst-accent font-bold">
+                            {accentLabel}
+                          </span>
+                        )}
+                        味
+                      </div>
+                      {highlightedDescription && (
                         <div className="text-sm text-worst-primary">
-                        {(() => {
-                          const flavor = item.name.split(" ")[1]?.split("味")[0] || "";
-                          if (!flavor || !item.description) return item.description;
-                          if (!item.description.includes(flavor)) return item.description;
-                          const parts = item.description.split(flavor);
-                          return parts.flatMap((p, i) =>
-                          i === parts.length - 1
-                            ? [p]
-                            : [p, <span key={i} className="text-worst-accent font-bold">{flavor}</span>]
-                          );
-                        })()}
+                          {highlightedDescription}
                         </div>
-                    )}
-                  </div>
-                </label>
-              ))
+                      )}
+                    </div>
+                  </label>
+                );
+              })
             )}
           </fieldset>
 

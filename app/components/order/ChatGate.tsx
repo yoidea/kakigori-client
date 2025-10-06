@@ -280,18 +280,15 @@ const loadingDialog = (
   <div className="fixed inset-0 z-50 flex items-center justify-center">
     <div className="absolute inset-0 bg-gray-900/40" />
     <div className="relative flex flex-col items-center bg-worst-accent px-8 py-8">
-      <p className="text-sm font-semibold text-worst-primary">
-        送信中...
-      </p>
-      <div
+      <p className="text-sm font-semibold text-worst-primary">送信中...</p>
+      <output
         className="mt-5 h-12 w-12 rounded-full border-[6px] border-gray-300 border-t-blue-500"
         style={{
           animation: "spin 2.8s steps(9,end) infinite",
           filter: "drop-shadow(0 0 2px rgba(0,0,0,0.15))",
         }}
         aria-label="通信中"
-        aria-busy="true"
-        role="status"
+        aria-live="polite"
       />
     </div>
   </div>

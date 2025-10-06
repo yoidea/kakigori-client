@@ -165,12 +165,14 @@ export default function OrderPageManager({ storeId }: OrderPageManagerProps) {
             onSubmit={handleOrderSubmit}
             submitting={submitting}
             orderError={submitError}
+            worstUIEnabled={worstUIEnabled}
           />
         ),
       },
     ],
     [
       goToNextStep,
+      goToPrevStep,
       handleOrderSubmit,
       loadMenu,
       menu,

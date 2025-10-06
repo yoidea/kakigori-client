@@ -31,15 +31,14 @@ export default function ConnectionNotice({
             <p className="text-sm font-semibold text-worst-secondary">
               インターネット接続確認中...
             </p>
-            <div
+            <output
               className="mt-5 h-12 w-12 rounded-full border-[6px] border-gray-300 border-t-blue-500"
               style={{
                 animation: "spin 2.8s steps(9,end) infinite",
                 filter: "drop-shadow(0 0 2px rgba(0,0,0,0.15))",
               }}
               aria-label="通信中"
-              aria-busy="true"
-              role="status"
+              aria-live="polite"
             />
           </div>
         </div>
@@ -68,7 +67,7 @@ export default function ConnectionNotice({
             className="absolute bottom-2 right-3 items-center justify-center text-[16px] font-semibold uppercase tracking-widest text-worst-primary transition cursor-pointer"
             onClick={onBack}
           >
-            {worstUIEnabled ? "◀戻る" : "確認する"}
+            {worstUIEnabled ? "◀戻る" : ""}
           </button>
         </div>
         <p
