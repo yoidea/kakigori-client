@@ -25,9 +25,10 @@ type StepConfig = {
 
 type OrderPageManagerProps = {
   storeId: string;
+  clientKey: string;
 };
 
-export default function OrderPageManager({ storeId }: OrderPageManagerProps) {
+export default function OrderPageManager({ storeId, clientKey }: OrderPageManagerProps) {
   const navigate = useNavigate();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [menu, setMenu] = useState<MenuItem[]>([]);
@@ -55,14 +56,14 @@ export default function OrderPageManager({ storeId }: OrderPageManagerProps) {
     setMenuLoading(true);
     setMenuError(null);
     try {
-      const items = await fetchMenu(storeId);
+      const items = await fetchMenu(storeId, clientKey);
       setMenu(items);
     } catch (error) {
       setMenuError(error instanceof Error ? error.message : String(error));
     } finally {
       setMenuLoading(false);
     }
-  }, [storeId]);
+  }, [storeId, clientKey]);
 
   useEffect(() => {
     if (currentStep === OrderStep.Menu) {
@@ -90,14 +91,14 @@ export default function OrderPageManager({ storeId }: OrderPageManagerProps) {
     setSubmitting(true);
     setSubmitError(null);
     try {
-      const order = await createOrder(storeId, selectedMenuId);
+      const order = await createOrder(storeId, selectedMenuId, clientKey);
       navigate(`/order/${storeId}/receipt/${order.id}`);
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : String(error));
     } finally {
       setSubmitting(false);
     }
-  }, [navigate, selectedMenuId, storeId]);
+  }, [navigate, selectedMenuId, storeId, clientKey]);
 
   useEffect(() => {
     if (

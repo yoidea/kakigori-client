@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useParams, useSearchParams } from "react-router";
 import { fetchOrderById, type OrderResponse } from "../api/client";
 import ErrorCard from "../components/ui/ErrorCard";
 import SuccessCard from "../components/ui/SuccessCard";
@@ -9,6 +9,8 @@ export default function ReceiptPage() {
     storeId: string;
     orderId: string;
   }>();
+  const [searchParams] = useSearchParams();
+  const clientKey = searchParams.get("key") || "";
   const [order, setOrder] = useState<OrderResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -23,7 +25,7 @@ export default function ReceiptPage() {
     setErr(null);
     (async () => {
       try {
-        const data = await fetchOrderById(storeId, orderId);
+        const data = await fetchOrderById(storeId, orderId, clientKey);
         setOrder(data);
       } catch (e) {
         setErr(e instanceof Error ? e.message : String(e));
@@ -31,7 +33,7 @@ export default function ReceiptPage() {
         setLoading(false);
       }
     })();
-  }, [storeId, orderId]);
+  }, [storeId, orderId, clientKey]);
 
   if (err) {
     return (
