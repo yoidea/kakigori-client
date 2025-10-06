@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import AdminOrdersBoard from "../components/AdminOrdersBoard";
+import AdminOrdersBoard from "../components/admin/AdminOrdersBoard";
 import StoreIdForm, {
   getStoredStoreId,
   clearStoredStoreId,
