@@ -1,16 +1,27 @@
-import { useCallback, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 
-export function useWorstSendButton() {
+const INITIAL_STYLE: CSSProperties = {
+  position: "absolute",
+  bottom: "1.5rem",
+  right: "1.5rem",
+};
+
+export function useWorstSendButton(enabled = true) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const [style, setStyle] = useState<React.CSSProperties>({
-    position: "absolute",
-    bottom: "1.5rem",
-    right: "1.5rem",
-  });
+  const [style, setStyle] = useState<CSSProperties>(() => ({
+    ...INITIAL_STYLE,
+  }));
   const dodgeCountRef = useRef(0);
 
   const relocate = useCallback(() => {
+    if (!enabled) return;
     const container = containerRef.current;
     const button = buttonRef.current;
     if (!container || !button) return;
@@ -30,16 +41,18 @@ export function useWorstSendButton() {
       left: `${randomX}px`,
       top: `${randomY}px`,
     });
-  }, []);
+  }, [enabled]);
 
   const resetPosition = useCallback(() => {
     dodgeCountRef.current = 0;
-    setStyle({
-      position: "absolute",
-      bottom: "1.5rem",
-      right: "1.5rem",
-    });
+    setStyle({ ...INITIAL_STYLE });
   }, []);
+
+  useEffect(() => {
+    if (!enabled) {
+      resetPosition();
+    }
+  }, [enabled, resetPosition]);
 
   return {
     containerRef,

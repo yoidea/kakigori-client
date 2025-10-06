@@ -1,6 +1,7 @@
 export const conversationFlow = [
   {
-    botMessage: "はじめまして！マッチングありがとうございます！",
+    botMessage:
+      "ご注文ありがとうございます。まずは簡単なアンケートにご協力ください。",
     correctIndex: 1,
     options: [
       "よろしくお願いします！",
@@ -18,7 +19,7 @@ export const conversationFlow = [
     ],
   },
   {
-    botMessage: "注文をしたいの？",
+    botMessage: "注文をしたい？",
     correctIndex: 1,
     options: [
       "えーっと、何にしようかな…",
@@ -27,7 +28,7 @@ export const conversationFlow = [
     ],
   },
   {
-    botMessage: "他に食べたいフレーバーはないの？",
+    botMessage: "他に食べたいフレーバーはない？",
     correctIndex: 0,
     options: ["あるわけないよ", "全部食べたい！！", "食べたいから！早くして！"],
   },

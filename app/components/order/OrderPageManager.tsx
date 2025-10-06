@@ -36,11 +36,18 @@ export default function OrderPageManager({ storeId }: OrderPageManagerProps) {
   const [selectedMenuId, setSelectedMenuId] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [testModeEnabled, setTestModeEnabled] = useState(false);
+  const [canToggleTestMode, setCanToggleTestMode] = useState(false);
 
   const currentStep = STEP_SEQUENCE[currentStepIndex];
+  const worstUIEnabled = !testModeEnabled;
 
   const goToNextStep = useCallback(() => {
     setCurrentStepIndex((prev) => Math.min(prev + 1, STEP_SEQUENCE.length - 1));
+  }, []);
+
+  const goToPrevStep = useCallback(() => {
+    setCurrentStepIndex((prev) => Math.max(prev - 1, 0));
   }, []);
 
   const loadMenu = useCallback(async () => {
@@ -92,6 +99,30 @@ export default function OrderPageManager({ storeId }: OrderPageManagerProps) {
     }
   }, [navigate, selectedMenuId, storeId]);
 
+  useEffect(() => {
+    if (
+      typeof window === "undefined" ||
+      typeof window.matchMedia !== "function"
+    ) {
+      return;
+    }
+    const query = window.matchMedia("(pointer: fine)");
+    const update = (event: MediaQueryListEvent) => {
+      setCanToggleTestMode(event.matches);
+    };
+    setCanToggleTestMode(query.matches);
+    if (typeof query.addEventListener === "function") {
+      query.addEventListener("change", update);
+      return () => {
+        query.removeEventListener("change", update);
+      };
+    }
+    query.addListener(update);
+    return () => {
+      query.removeListener(update);
+    };
+  }, []);
+
   const steps: StepConfig[] = useMemo(
     () => [
       {
@@ -102,6 +133,8 @@ export default function OrderPageManager({ storeId }: OrderPageManagerProps) {
             onComplete={() => {
               goToNextStep();
             }}
+            worstUIEnabled={worstUIEnabled}
+            testMode={testModeEnabled}
           />
         ),
       },
@@ -112,6 +145,10 @@ export default function OrderPageManager({ storeId }: OrderPageManagerProps) {
             onConfirm={() => {
               goToNextStep();
             }}
+            onBack={() => {
+              goToPrevStep();
+            }}
+            worstUIEnabled={worstUIEnabled}
           />
         ),
       },
@@ -142,6 +179,8 @@ export default function OrderPageManager({ storeId }: OrderPageManagerProps) {
       selectedMenuId,
       submitting,
       submitError,
+      testModeEnabled,
+      worstUIEnabled,
     ],
   );
 
@@ -150,6 +189,26 @@ export default function OrderPageManager({ storeId }: OrderPageManagerProps) {
   return (
     <main className="mx-auto flex min-h-[100dvh] max-w-sm flex-col justify-start p-4">
       <h1 className="text-center text-2xl font-bold">かき氷注文システム</h1>
+      {canToggleTestMode && (
+        <div className="mt-3 flex justify-end">
+          <button
+            type="button"
+            onClick={() => setTestModeEnabled((prev) => !prev)}
+            aria-pressed={testModeEnabled}
+            className="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white px-3 py-1 text-xs font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+            title="PC接続時のみ表示されるテスト用トグルです"
+          >
+            <span>UIテストモード</span>
+            <span
+              className={`inline-block h-2.5 w-2.5 rounded-full ${
+                testModeEnabled ? "bg-emerald-500" : "bg-gray-400"
+              }`}
+              aria-hidden="true"
+            />
+            <span>{testModeEnabled ? "ON" : "OFF"}</span>
+          </button>
+        </div>
+      )}
       {activeStep?.render()}
     </main>
   );
