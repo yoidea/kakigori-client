@@ -27,10 +27,6 @@ export default function MenuSelection({
 }: MenuSelectionProps) {
   return (
     <section className="mt-6 flex flex-1 flex-col">
-      <p className="text-center text-gray-600 dark:text-gray-300">
-        ここまで来たあなたには、通常の注文画面をお届けします
-      </p>
-
       {loading ? (
         <Placeholder />
       ) : error ? (
@@ -39,7 +35,7 @@ export default function MenuSelection({
           <button
             type="button"
             onClick={onRetry}
-            className="mt-4 w-full rounded-2xl border border-gray-300 py-3 font-semibold dark:border-gray-700"
+            className="mt-4 w-full border border-gray-300 py-3 font-semibold"
           >
             再読み込みする
           </button>
@@ -48,17 +44,17 @@ export default function MenuSelection({
         <div className="mt-6 space-y-4">
           <fieldset className="space-y-3">
             {menu.length === 0 ? (
-              <p className="text-center text-gray-500 dark:text-gray-400">
+              <p className="text-center text-gray-500">
                 メニューがありません
               </p>
             ) : (
               menu.map((item) => (
                 <label
                   key={item.id}
-                  className={`flex items-start gap-3 rounded-2xl border p-4 transition active:scale-[0.99] ${
+                  className={`flex items-start gap-3 border p-4 transition active:scale-[0.99] ${
                     selectedMenuId === item.id
                       ? "cursor-pointer border-blue-600 ring-2 ring-blue-600/20"
-                      : "cursor-pointer border-gray-300 dark:border-gray-700"
+                      : "cursor-pointer border-gray-300"
                   }`}
                 >
                   <input
@@ -69,11 +65,21 @@ export default function MenuSelection({
                     onChange={() => onSelect(item.id)}
                   />
                   <div className="flex-1">
-                    <div className="font-semibold">{item.name}</div>
+                    <div className="font-semibold">{item.name.split(" ")[0]}<span className="text-worst-accent font-bold">{" "+item.name.split(" ")[1].split("味")[0]}</span>味</div>
                     {item.description && (
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
-                        {item.description}
-                      </div>
+                        <div className="text-sm text-worst-primary">
+                        {(() => {
+                          const flavor = item.name.split(" ")[1]?.split("味")[0] || "";
+                          if (!flavor || !item.description) return item.description;
+                          if (!item.description.includes(flavor)) return item.description;
+                          const parts = item.description.split(flavor);
+                          return parts.flatMap((p, i) =>
+                          i === parts.length - 1
+                            ? [p]
+                            : [p, <span key={i} className="text-worst-accent font-bold">{flavor}</span>]
+                          );
+                        })()}
+                        </div>
                     )}
                   </div>
                 </label>
@@ -85,7 +91,7 @@ export default function MenuSelection({
             type="button"
             onClick={onSubmit}
             disabled={!selectedMenuId || submitting}
-            className="w-full rounded-2xl bg-blue-600 py-3 font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full bg-worst-accent py-3 font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50"
           >
             {submitting ? "送信中..." : "この内容で注文する"}
           </button>

@@ -5,8 +5,8 @@ export const conversationFlow = [
     correctIndex: 1,
     options: [
       "よろしくお願いします！",
-      "こちらこそ、ありがとうございます！",
-      "はい、緊張しますね！",
+      "なんでも答えます！",
+      "はい！",
     ],
   },
   {

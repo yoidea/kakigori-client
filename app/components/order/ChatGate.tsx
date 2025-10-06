@@ -58,6 +58,7 @@ export default function ChatGate({
   worstUIEnabled,
   testMode,
 }: ChatGateProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const selectedFlow = useMemo(() => pickFlowNodes(flow, 6), [flow]);
   const effectiveFlow = useMemo(
     () => (testMode ? selectedFlow.slice(0, 1) : selectedFlow),
@@ -133,6 +134,7 @@ export default function ChatGate({
         botTimeoutsRef.current = botTimeoutsRef.current.filter(
           (pending) => pending !== timeoutId,
         );
+        setIsLoading(false);
       }, BOT_RESPONSE_DELAY);
       botTimeoutsRef.current.push(timeoutId);
     },
@@ -140,6 +142,7 @@ export default function ChatGate({
   );
 
   const handleSend = (event: FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
     event.preventDefault();
     if (selectedOption === null || !currentNode) return;
 
@@ -197,9 +200,13 @@ export default function ChatGate({
     }
   };
 
+  if (isLoading) {
+    return loadingDialog;
+  }
+
   return (
-    <section className="mt-4 flex flex-1 flex-col">
-      <div className="mt-4 flex flex-1 flex-col overflow-hidden border border-gray-200 bg-white">
+    <section className="mt-4 flex flex-1 flex-col h-screen">
+      <div className="mt-4 flex flex-1 flex-col overflow-hidden">
         <div className="flex-1 space-y-3 overflow-y-auto p-4" role="log">
           {messages.map((message) => (
             <div
@@ -211,8 +218,8 @@ export default function ChatGate({
               <div
                 className={`max-w-[80%] px-4 py-2 text-sm leading-relaxed ${
                   message.sender === "bot"
-                    ? "bg-gray-100 text-gray-900"
-                    : "bg-blue-600 text-white"
+                    ? "bg-gray-100 text-worst-primary"
+                    : "bg-blue-600 text-worst-accent"
                 }`}
               >
                 {message.text}
@@ -223,20 +230,20 @@ export default function ChatGate({
         </div>
         <form
           onSubmit={handleSend}
-          className="border-t border-gray-200 dark:border-gray-700"
+          className="border-t border-gray-200"
         >
           <div
             ref={containerRef}
-            className="relative min-h-[200px] bg-gray-50 p-4 dark:bg-gray-950"
+            className="relative min-h-[200px] bg-gray-50 p-4"
           >
             <fieldset className="space-y-2 text-sm">
               {currentNode?.options.map((option, index) => (
                 <label
                   key={option}
-                  className={`flex cursor-pointer items-center justify-between border border-gray-200 px-3 py-2 transition active:scale-[0.99] dark:border-gray-700 ${
+                  className={`flex cursor-pointer items-center justify-between border border-gray-200 px-3 py-2 transition active:scale-[0.99] ${
                     selectedOption === index
-                      ? "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-200"
-                      : "bg-white dark:bg-gray-900"
+                      ? "bg-blue-50 text-blue-700"
+                      : "bg-white"
                   }`}
                 >
                   <span>{option}</span>
@@ -258,7 +265,7 @@ export default function ChatGate({
               onFocus={worstUIEnabled ? relocate : undefined}
               onTouchStart={worstUIEnabled ? relocate : undefined}
               style={style}
-              className="flex h-10 min-w-[88px] items-center justify-center bg-blue-600 px-6 text-sm font-semibold text-white shadow transition disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex h-10 min-w-[88px] items-center justify-center bg-worst-accent px-6 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-40"
             >
               送信
             </button>
@@ -268,3 +275,24 @@ export default function ChatGate({
     </section>
   );
 }
+
+const loadingDialog = (
+  <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="absolute inset-0 bg-gray-900/40" />
+    <div className="relative flex flex-col items-center bg-worst-accent px-8 py-8">
+      <p className="text-sm font-semibold text-worst-primary">
+        送信中...
+      </p>
+      <div
+        className="mt-5 h-12 w-12 rounded-full border-[6px] border-gray-300 border-t-blue-500"
+        style={{
+          animation: "spin 2.8s steps(9,end) infinite",
+          filter: "drop-shadow(0 0 2px rgba(0,0,0,0.15))",
+        }}
+        aria-label="通信中"
+        aria-busy="true"
+        role="status"
+      />
+    </div>
+  </div>
+);

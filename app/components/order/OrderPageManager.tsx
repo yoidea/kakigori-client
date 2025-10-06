@@ -187,8 +187,8 @@ export default function OrderPageManager({ storeId }: OrderPageManagerProps) {
   const activeStep = steps.find((step) => step.id === currentStep);
 
   return (
-    <main className="mx-auto flex min-h-[100dvh] max-w-sm flex-col justify-start p-4">
-      <h1 className="text-center text-2xl font-bold">かき氷注文システム</h1>
+    <main className="mx-auto flex min-h-[100dvh] max-w-sm flex-col justify-start p-4 bg-worst">
+      <h1 className="text-center text-2xl font-bold text-worst-primary">かき氷注文システム</h1>
       {canToggleTestMode && (
         <div className="mt-3 flex justify-end">
           <button
