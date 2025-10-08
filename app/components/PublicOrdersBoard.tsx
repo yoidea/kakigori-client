@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 import type { OrderResponse, OrderStatus } from "../api/client";
 import { ORDER_STATUS_LABEL } from "../constants/orderStatus";
 import { fetchOrders } from "../api/client";
-import ErrorCard from "./ErrorCard";
+import ErrorCard from "./ui/ErrorCard";
 
 type Props = {
   storeId: string;

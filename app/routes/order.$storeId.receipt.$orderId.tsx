@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { fetchOrderById, type OrderResponse } from "../api/client";
-import ErrorCard from "../components/ErrorCard";
-import SuccessCard from "../components/SuccessCard";
+import ErrorCard from "../components/ui/ErrorCard";
+import SuccessCard from "../components/ui/SuccessCard";
 
 export default function ReceiptPage() {
   const { storeId, orderId } = useParams<{

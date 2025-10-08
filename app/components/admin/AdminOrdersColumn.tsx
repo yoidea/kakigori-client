@@ -1,4 +1,4 @@
-import type { OrderResponse, OrderStatus } from "../api/client";
+import type { OrderResponse, OrderStatus } from "../../api/client";
 
 type BindColumnResult = { [key: string]: unknown; className?: string };
 type BindCardResult = { [key: string]: unknown };

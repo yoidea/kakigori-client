@@ -1,4 +1,4 @@
-import type { OrderResponse } from "../api/client";
+import type { OrderResponse } from "../../api/client";
 
 const STATUS_BADGE: Record<
   OrderResponse["status"],
