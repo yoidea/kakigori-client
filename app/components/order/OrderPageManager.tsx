@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type JSX } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams, createSearchParams } from "react-router";
 import { createOrder, fetchMenu, type MenuItem } from "../../api/client";
 import { conversationFlow } from "../../constants/q-and-a";
 import ChatGate from "./ChatGate";
@@ -42,6 +42,7 @@ export default function OrderPageManager({
   const [submitting, setSubmitting] = useState(false);
   const [testModeEnabled, setTestModeEnabled] = useState(false);
   const [canToggleTestMode, setCanToggleTestMode] = useState(false);
+  const [searchParams] = useSearchParams();
 
   const currentStep = STEP_SEQUENCE[currentStepIndex];
   const worstUIEnabled = !testModeEnabled;
@@ -95,7 +96,10 @@ export default function OrderPageManager({
     setSubmitError(null);
     try {
       const order = await createOrder(storeId, selectedMenuId, clientKey);
-      navigate(`/order/${storeId}/receipt/${order.id}`);
+      navigate({
+        pathname: `/order/${storeId}/receipt/${order.id}`,
+        search: `?${createSearchParams([...searchParams])}`,
+      });
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : String(error));
     } finally {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "react-router";
+import { useParams, useSearchParams, useLocation } from "react-router";
 import { fetchOrderById, type OrderResponse } from "../api/client";
 import ErrorCard from "../components/ui/ErrorCard";
 import SuccessCard from "../components/ui/SuccessCard";
@@ -14,6 +14,7 @@ export default function ReceiptPage() {
   const [order, setOrder] = useState<OrderResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
+  const { search } = useLocation();
 
   useEffect(() => {
     if (!storeId || !orderId) {
@@ -40,7 +41,7 @@ export default function ReceiptPage() {
       <main className="mx-auto max-w-sm p-4">
         <ErrorCard title="注文を取得できませんでした" message={err} />
         <a
-          href={`/order/${storeId}`}
+          href={`/order/${storeId}${search}`}
           className="mt-4 block text-center w-full rounded-2xl border border-gray-300 dark:border-gray-700 py-3 font-semibold"
         >
           注文画面に戻る
@@ -64,7 +65,7 @@ export default function ReceiptPage() {
         <>
           {order && <SuccessCard order={order} />}
           <a
-            href={`/order/${storeId}`}
+            href={`/order/${storeId}${search}`}
             className="mt-4 block text-center w-full rounded-2xl border border-gray-300 dark:border-gray-700 py-3 font-semibold"
           >
             もう一度注文する
