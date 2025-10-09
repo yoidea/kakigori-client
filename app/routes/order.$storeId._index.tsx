@@ -37,5 +37,7 @@ export default function OrderPage() {
     );
   }
 
-  return <OrderPageManager key={storeId} storeId={storeId} clientKey={clientKey} />;
+  return (
+    <OrderPageManager key={storeId} storeId={storeId} clientKey={clientKey} />
+  );
 }

@@ -9,11 +9,13 @@ export type OrderResponse = {
 };
 export type ApiError = { error: string; message: string };
 
-// .envがなければlocalhostを参照するようにしてある
-const API_BASE:string = import.meta.env.VITE_API_BASE ?? "http://localhost:8080";
-const X_API_KEY:string = import.meta.env.VITE_API_KEY;
+const API_BASE: string =
+  import.meta.env.VITE_API_BASE ?? "http://localhost:8080";
 
-export async function fetchMenu(storeId: string, clientKey: string): Promise<MenuItem[]> {
+export async function fetchMenu(
+  storeId: string,
+  clientKey: string,
+): Promise<MenuItem[]> {
   const res = await fetch(`${API_BASE}/v1/stores/${storeId}/menu`, {
     headers: { "X-Client-Key": clientKey },
   });
@@ -28,7 +30,7 @@ export async function fetchMenu(storeId: string, clientKey: string): Promise<Men
 export async function createOrder(
   storeId: string,
   menuId: string,
-  clientKey: string
+  clientKey: string,
 ): Promise<OrderResponse> {
   const res = await fetch(`${API_BASE}/v1/stores/${storeId}/orders`, {
     method: "POST",
@@ -45,11 +47,14 @@ export async function createOrder(
 export async function fetchOrderById(
   storeId: string,
   orderId: string,
-  clientKey: string
+  clientKey: string,
 ): Promise<OrderResponse> {
-  const res = await fetch(`${API_BASE}/v1/stores/${storeId}/orders/${orderId}`, {
-    headers: { "X-Client-Key": clientKey },
-  });
+  const res = await fetch(
+    `${API_BASE}/v1/stores/${storeId}/orders/${orderId}`,
+    {
+      headers: { "X-Client-Key": clientKey },
+    },
+  );
   if (!res.ok) {
     const data = (await res.json().catch(() => null)) as ApiError | null;
     throw new Error(data?.message || `Order fetch failed (${res.status})`);
@@ -60,12 +65,15 @@ export async function fetchOrderById(
 // 管理画面・公開画面向け：注文一覧の取得（ステータスでの絞り込み可）
 export async function fetchOrders(
   storeId: string,
+  X_API_KEY: string,
   status?: OrderStatus,
 ): Promise<OrderResponse[]> {
   const url = new URL(`${API_BASE}/v1/stores/${storeId}/orders`);
   if (status) url.searchParams.set("status", status);
   const res = await fetch(url, {
-    headers: { "X-API-Key": X_API_KEY },
+    headers: {
+      "X-API-Key": X_API_KEY,
+    },
   });
   if (!res.ok) {
     const data = (await res.json().catch(() => null)) as ApiError | null;
@@ -79,10 +87,16 @@ export async function fetchOrders(
 export async function updateOrderToWaitingPickup(
   storeId: string,
   orderId: string,
+  X_API_KEY: string,
 ): Promise<OrderResponse> {
   const res = await fetch(
     `${API_BASE}/v1/stores/${storeId}/orders/${orderId}/waiting-pickup`,
-    { method: "POST", headers: { "X-API-Key": X_API_KEY } },
+    {
+      method: "POST",
+      headers: {
+        "X-API-Key": X_API_KEY,
+      },
+    },
   );
   if (!res.ok) {
     const data = (await res.json().catch(() => null)) as ApiError | null;
@@ -97,10 +111,14 @@ export async function updateOrderToWaitingPickup(
 export async function completeOrder(
   storeId: string,
   orderId: string,
+  X_API_KEY: string,
 ): Promise<OrderResponse> {
   const res = await fetch(
     `${API_BASE}/v1/stores/${storeId}/orders/${orderId}/complete`,
-    { method: "POST", headers: { "X-API-Key": X_API_KEY } },
+    {
+      method: "POST",
+      headers: { "X-API-Key": X_API_KEY },
+    },
   );
   if (!res.ok) {
     const data = (await res.json().catch(() => null)) as ApiError | null;

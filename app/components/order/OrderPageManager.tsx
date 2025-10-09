@@ -28,7 +28,10 @@ type OrderPageManagerProps = {
   clientKey: string;
 };
 
-export default function OrderPageManager({ storeId, clientKey }: OrderPageManagerProps) {
+export default function OrderPageManager({
+  storeId,
+  clientKey,
+}: OrderPageManagerProps) {
   const navigate = useNavigate();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [menu, setMenu] = useState<MenuItem[]>([]);
@@ -191,7 +194,9 @@ export default function OrderPageManager({ storeId, clientKey }: OrderPageManage
 
   return (
     <main className="mx-auto flex min-h-[100dvh] max-w-sm flex-col justify-start p-4 bg-worst">
-      <h1 className="text-center text-2xl font-bold text-worst-primary">かき氷注文システム</h1>
+      <h1 className="text-center text-2xl font-bold text-worst-primary">
+        かき氷注文システム
+      </h1>
       {canToggleTestMode && (
         <div className="mt-3 flex justify-end">
           <button
