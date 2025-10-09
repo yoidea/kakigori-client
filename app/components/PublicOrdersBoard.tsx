@@ -7,6 +7,7 @@ import ErrorCard from "./ui/ErrorCard";
 
 type Props = {
   storeId: string;
+  apiKey: string;
   pollMs?: number;
   mode: DisplayMode;
 };
@@ -27,13 +28,14 @@ export const n2k = (num: number | string): string => {
   const ones = value % 10;
   let result = "";
   if (tens === 1) result += "十";
-  else result += kanji[tens] + "十";
+  else result += `${kanji[tens]}十`;
   if (ones > 0) result += kanji[ones];
   return result;
 };
 
 export default function PublicOrdersBoard({
   storeId,
+  apiKey,
   pollMs = 2000,
   mode,
 }: Props) {
@@ -44,14 +46,14 @@ export default function PublicOrdersBoard({
   const load = useCallback(async () => {
     try {
       setErr(null);
-      const list = await fetchOrders(storeId);
+      const list = await fetchOrders(storeId, apiKey);
       setOrders(list);
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e));
     } finally {
       setLoading(false);
     }
-  }, [storeId]);
+  }, [storeId, apiKey]);
 
   useEffect(() => {
     setLoading(true);
@@ -116,9 +118,7 @@ function Column({
 }) {
   return (
     <div
-      className={
-        ` overflow-hidden ` + (status === "pending" ? "basis-1/5" : "basis-4/5")
-      }
+      className={` overflow-hidden ${status === "pending" ? "basis-1/5" : "basis-4/5"}`}
     >
       <div
         className={

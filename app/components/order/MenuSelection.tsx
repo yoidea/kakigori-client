@@ -1,5 +1,5 @@
 import "animate.css";
-import { useState } from "react";
+import { useState, useId } from "react";
 import type { MenuItem } from "../../api/client";
 import ErrorCard from "../ui/ErrorCard";
 import Placeholder from "../ui/Placeholder";
@@ -30,6 +30,7 @@ export default function MenuSelection({
 }: MenuSelectionProps) {
   const [emphasis, setEmphasis] = useState(false);
   const [fontsize, setFontsize] = useState(1);
+  const id = useId();
   return (
     <section className="mt-6 flex flex-1 flex-col">
       {loading ? (
@@ -139,10 +140,10 @@ export default function MenuSelection({
           </button>
 
           <section
-            aria-labelledby="terms-heading"
+            aria-labelledby={`terms-heading-${id}`}
             className="rounded-2xl border border-gray-200 bg-white p-4 text-sm text-gray-700"
           >
-            <h2 id="terms-heading" className="mb-2 font-semibold">
+            <h2 id={`terms-heading-${id}`} className="mb-2 font-semibold">
               利用規約
             </h2>
             <div className="max-h-80 overflow-y-auto leading-12 pr-1">

@@ -1,39 +1,43 @@
 import { useEffect, useState } from "react";
 import AdminOrdersBoard from "../components/admin/AdminOrdersBoard";
-import StoreIdForm, {
-  getStoredStoreId,
-  clearStoredStoreId,
-} from "../components/StoreIdForm";
-
-const STORAGE_KEY = "kakigori.storeId";
+import StoreIdForm, { type StoreConfig } from "../components/StoreIdForm";
+import {
+  getLocalStorageItem,
+  clearLocalStorageItem,
+} from "../hooks/useLocalStorage";
+import { API_KEY_STORAGE_KEY, STORAGE_KEY } from "../constants/localStorage";
 
 export default function StorePage() {
-  const [storeId, setStoreId] = useState<string | null>(null);
+  const [config, setConfig] = useState<StoreConfig | null>(null);
 
   useEffect(() => {
-    setStoreId(getStoredStoreId(STORAGE_KEY));
+    setConfig({
+      storeId: getLocalStorageItem(STORAGE_KEY) || "",
+      apiKey: getLocalStorageItem(API_KEY_STORAGE_KEY) || "",
+    });
   }, []);
 
   const logout = () => {
-    clearStoredStoreId(STORAGE_KEY);
-    setStoreId(null);
+    clearLocalStorageItem(STORAGE_KEY);
+    setConfig(null);
   };
 
   return (
     <main className="mx-auto max-w-6xl p-4 min-h-[100dvh] flex flex-col">
       <h1 className="text-2xl font-bold text-center">店舗ダッシュボード</h1>
-      {!storeId ? (
+      {!config?.storeId || !config?.apiKey ? (
         <StoreIdForm
           storageKey={STORAGE_KEY}
-          onSaved={(id) => setStoreId(id)}
-          title="店舗IDを設定"
-          description="店舗IDを保存すると注文管理ダッシュボードを利用できます"
+          apiKeyStorageKey={API_KEY_STORAGE_KEY}
+          onSaved={setConfig}
+          title="店舗IDとAPIキーを設定"
+          description="店舗IDとAPIキーを保存すると注文管理ダッシュボードを利用できます"
           submitLabel="保存してダッシュボードへ"
         />
       ) : (
         <>
           <div className="mt-3 text-center text-sm text-gray-600 dark:text-gray-300">
-            店舗ID: <span className="font-mono">{storeId}</span>
+            店舗ID: <span className="font-mono">{config.storeId}</span>
           </div>
           <div className="mt-2 flex justify-center">
             <button
@@ -44,7 +48,7 @@ export default function StorePage() {
               変更する
             </button>
           </div>
-          <AdminOrdersBoard storeId={storeId} />
+          <AdminOrdersBoard storeId={config.storeId} apiKey={config.apiKey} />
         </>
       )}
     </main>

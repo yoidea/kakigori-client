@@ -28,7 +28,10 @@ type OrderPageManagerProps = {
   clientKey: string;
 };
 
-export default function OrderPageManager({ storeId, clientKey }: OrderPageManagerProps) {
+export default function OrderPageManager({
+  storeId,
+  clientKey,
+}: OrderPageManagerProps) {
   const navigate = useNavigate();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [menu, setMenu] = useState<MenuItem[]>([]);

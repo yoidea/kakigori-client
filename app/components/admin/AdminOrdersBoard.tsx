@@ -16,10 +16,15 @@ import ErrorCard from "../ui/ErrorCard";
 
 type Props = {
   storeId: string;
+  apiKey: string;
   pollMs?: number;
 };
 
-export default function AdminOrdersBoard({ storeId, pollMs = 4000 }: Props) {
+export default function AdminOrdersBoard({
+  storeId,
+  apiKey,
+  pollMs = 4000,
+}: Props) {
   const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -33,9 +38,9 @@ export default function AdminOrdersBoard({ storeId, pollMs = 4000 }: Props) {
         try {
           if (from === to) return;
           if (to === "waitingPickup" && from === "pending") {
-            await updateOrderToWaitingPickup(storeId, orderId);
+            await updateOrderToWaitingPickup(storeId, orderId, apiKey);
           } else if (to === "completed" && from === "waitingPickup") {
-            await completeOrder(storeId, orderId);
+            await completeOrder(storeId, orderId, apiKey);
           }
           await load();
         } catch (e) {
@@ -47,14 +52,14 @@ export default function AdminOrdersBoard({ storeId, pollMs = 4000 }: Props) {
   const load = useCallback(async () => {
     try {
       setErr(null);
-      const list = await fetchOrders(storeId);
+      const list = await fetchOrders(storeId, apiKey);
       setOrders(list);
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e));
     } finally {
       setLoading(false);
     }
-  }, [storeId]);
+  }, [storeId, apiKey]);
 
   useEffect(() => {
     setLoading(true);
@@ -94,7 +99,7 @@ export default function AdminOrdersBoard({ storeId, pollMs = 4000 }: Props) {
     if (ids.length === 0) return;
     try {
       await Promise.all(
-        ids.map((id) => updateOrderToWaitingPickup(storeId, id)),
+        ids.map((id) => updateOrderToWaitingPickup(storeId, id, apiKey)),
       );
       clear("pending");
       await load();
@@ -107,7 +112,7 @@ export default function AdminOrdersBoard({ storeId, pollMs = 4000 }: Props) {
     const ids = Array.from(selected.waitingPickup);
     if (ids.length === 0) return;
     try {
-      await Promise.all(ids.map((id) => completeOrder(storeId, id)));
+      await Promise.all(ids.map((id) => completeOrder(storeId, id, apiKey)));
       clear("waitingPickup");
       await load();
     } catch (e) {

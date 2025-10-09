@@ -1,23 +1,25 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import PublicOrdersBoard from "../components/PublicOrdersBoard";
-import { getStoredStoreId } from "../components/StoreIdForm";
+import { getLocalStorageItem } from "../hooks/useLocalStorage";
+import { API_KEY_STORAGE_KEY, STORAGE_KEY } from "../constants/localStorage";
 import { DISPLAY_MODE, type DisplayMode } from "../constants/displayMode";
-
-const STORAGE_KEY = "kakigori.storeId";
 
 export default function StorePublicPage() {
   const navigate = useNavigate();
   const [storeId, setStoreId] = useState<string | null>(null);
+  const [apiKey, setApiKey] = useState<string | null>(null);
   const [mode, setMode] = useState<DisplayMode>(DISPLAY_MODE.decimal);
 
   useEffect(() => {
-    const id = getStoredStoreId(STORAGE_KEY);
-    if (!id) {
+    const id = getLocalStorageItem(STORAGE_KEY);
+    const apiKey = getLocalStorageItem(API_KEY_STORAGE_KEY);
+    if (!id || !apiKey) {
       navigate("/store");
       return;
     }
     setStoreId(id);
+    setApiKey(apiKey);
   }, [navigate]);
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export default function StorePublicPage() {
     return () => clearInterval(timer);
   }, []);
 
-  if (!storeId) return null;
+  if (!storeId || !apiKey) return null;
 
   return (
     <main
@@ -46,7 +48,7 @@ export default function StorePublicPage() {
             : "bg-white dark:bg-zinc-900"
       }`}
     >
-      <PublicOrdersBoard storeId={storeId} mode={mode} />
+      <PublicOrdersBoard storeId={storeId} mode={mode} apiKey={apiKey} />
       <img
         src="/icon.jpg"
         alt="アイコン"
