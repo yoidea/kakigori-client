@@ -1,15 +1,42 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import type { OrderResponse, OrderStatus } from "../api/client";
 import { ORDER_STATUS_LABEL } from "../constants/orderStatus";
+import { DISPLAY_MODE, type DisplayMode } from "../constants/displayMode";
 import { fetchOrders } from "../api/client";
 import ErrorCard from "./ui/ErrorCard";
 
 type Props = {
   storeId: string;
   pollMs?: number;
+  mode: DisplayMode;
 };
 
-export default function PublicOrdersBoard({ storeId, pollMs = 2000 }: Props) {
+export const n2k = (num: number | string): string => {
+  if (num === undefined || num === null || num === "") return "";
+  const numStr = String(num);
+  if (!/^-?\d+$/.test(numStr)) return "";
+  const value = Number(numStr);
+  if (!Number.isInteger(value) || value < 0 || value > 100) return "";
+  if (value === 0) return "零";
+  if (value === 100) return "百";
+  const kanji = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
+  if (value < 10) {
+    return kanji[value];
+  }
+  const tens = Math.floor(value / 10);
+  const ones = value % 10;
+  let result = "";
+  if (tens === 1) result += "十";
+  else result += kanji[tens] + "十";
+  if (ones > 0) result += kanji[ones];
+  return result;
+};
+
+export default function PublicOrdersBoard({
+  storeId,
+  pollMs = 2000,
+  mode,
+}: Props) {
   const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -67,6 +94,7 @@ export default function PublicOrdersBoard({ storeId, pollMs = 2000 }: Props) {
               status={status}
               title={ORDER_STATUS_LABEL[status]}
               orders={grouped[status]}
+              mode={mode}
             />
           ))}
         </div>
@@ -79,16 +107,17 @@ function Column({
   title,
   orders,
   status,
+  mode,
 }: {
   title: string;
   orders: OrderResponse[];
   status: OrderStatus;
+  mode: DisplayMode;
 }) {
   return (
     <div
       className={
-        ` overflow-hidden bg-white dark:bg-zinc-900 ` +
-        (status === "pending" ? "basis-1/5" : "basis-4/5")
+        ` overflow-hidden ` + (status === "pending" ? "basis-1/5" : "basis-4/5")
       }
     >
       <div
@@ -130,7 +159,13 @@ function Column({
                       : "")
                   }
                 >
-                  {o.order_number}
+                  {mode === DISPLAY_MODE.binary
+                    ? o.order_number.toString(2)
+                    : mode === DISPLAY_MODE.chinese
+                      ? n2k(o.order_number)
+                      : mode === DISPLAY_MODE.decimal
+                        ? o.order_number
+                        : o.order_number}
                 </div>
               </div>
             </li>
