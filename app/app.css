@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --color-worst-50: #ff0000;
+  --color-worst-50: #00aa00;
   --color-worst-100: #f20000;
-  --color-worst-200: #0000ff;
-  --color-worst-300: #00ff00;
-  --color-worst-400: #ffff00;
+  --color-worst-200: #0000aa;
+  --color-worst-300: #00aa00;
+  --color-worst-400: #aaaa00;
   --color-worst-500: #ff00ff;
-  --color-worst-600: #00ffff;
+  --color-worst-600: #00aaaa;
   --color-worst-700: #ffa500;
   --color-worst-800: #800080;
   --color-worst-900: #008000;
