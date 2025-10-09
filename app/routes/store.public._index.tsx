@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import PublicOrdersBoard from "../components/PublicOrdersBoard";
 import { getStoredStoreId } from "../components/StoreIdForm";
+import { DISPLAY_MODE, type DisplayMode } from "../constants/displayMode";
 
 const STORAGE_KEY = "kakigori.storeId";
 
 export default function StorePublicPage() {
   const navigate = useNavigate();
   const [storeId, setStoreId] = useState<string | null>(null);
+  const [mode, setMode] = useState<DisplayMode>(DISPLAY_MODE.decimal);
 
   useEffect(() => {
     const id = getStoredStoreId(STORAGE_KEY);
@@ -18,11 +20,33 @@ export default function StorePublicPage() {
     setStoreId(id);
   }, [navigate]);
 
+  useEffect(() => {
+    const modes = [
+      DISPLAY_MODE.decimal,
+      DISPLAY_MODE.binary,
+      DISPLAY_MODE.chinese,
+    ] as const;
+    let index = 0;
+    const timer = setInterval(() => {
+      index = (index + 1) % modes.length;
+      setMode(modes[index]);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
   if (!storeId) return null;
 
   return (
-    <main className="mx-auto max-w-6xl p-4 min-h-[100dvh] flex flex-col">
-      <PublicOrdersBoard storeId={storeId} />
+    <main
+      className={`mx-auto max-w-6xl p-4 min-h-[100dvh] flex flex-col relative transition-all duration-700 ${
+        mode === DISPLAY_MODE.binary
+          ? "bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 via-purple-500 to-pink-500 animate-gradient-move"
+          : mode === DISPLAY_MODE.chinese
+            ? "bg-red-600"
+            : "bg-white dark:bg-zinc-900"
+      }`}
+    >
+      <PublicOrdersBoard storeId={storeId} mode={mode} />
       <img
         src="/icon.jpg"
         alt="アイコン"

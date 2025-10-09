@@ -21,7 +21,9 @@ type Message = {
   text: string;
 };
 
-const FAILURE_RESPONSES = ["申し訳ございません。もう一度お聞かせください。"];
+const FAILURE_RESPONSES = [
+  "申し訳ございません。対応する回答をご用意できませんでした。",
+];
 const BOT_RESPONSE_DELAY = 1500;
 
 function pickFlowNodes(flow: ConversationNode[], count: number) {
@@ -147,7 +149,9 @@ export default function ChatGate({
     if (selectedOption === null || !currentNode) return;
 
     const selectedText = currentNode.options[selectedOption];
-    const isCorrect = selectedOption === currentNode.correctIndex;
+    const isCorrect =
+      selectedOption === currentNode.correctIndex ||
+      currentNode.correctIndex === -1;
     const isLast = currentIndex === effectiveFlow.length - 1;
 
     setMessages((prev) => [
@@ -160,14 +164,14 @@ export default function ChatGate({
     ]);
 
     if (isCorrect) {
-      resetPosition();
+      relocate();
       setSelectedOption(null);
       if (isLast) {
         scheduleBotResponse(
           {
             id: "bot-final",
             sender: "bot",
-            text: "ご協力ありがとうございました！インターネット接続を確認します。",
+            text: "インターネット接続を確認します。",
           },
           () => {
             completionTimeoutRef.current = setTimeout(() => {
@@ -228,10 +232,7 @@ export default function ChatGate({
           ))}
           <div ref={bottomRef} />
         </div>
-        <form
-          onSubmit={handleSend}
-          className="border-t border-gray-200"
-        >
+        <form onSubmit={handleSend} className="border-t border-gray-200">
           <div
             ref={containerRef}
             className="relative min-h-[200px] bg-gray-50 p-4"
@@ -261,9 +262,10 @@ export default function ChatGate({
             <button
               ref={buttonRef}
               type="submit"
-              onMouseEnter={worstUIEnabled ? relocate : undefined}
-              onFocus={worstUIEnabled ? relocate : undefined}
-              onTouchStart={worstUIEnabled ? relocate : undefined}
+              disabled={selectedOption === null}
+              // onMouseEnter={worstUIEnabled ? relocate : undefined}
+              // onFocus={worstUIEnabled ? relocate : undefined}
+              // onTouchStart={worstUIEnabled ? relocate : undefined}
               style={style}
               className="flex h-10 min-w-[88px] items-center justify-center bg-worst-accent px-6 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-40"
             >
