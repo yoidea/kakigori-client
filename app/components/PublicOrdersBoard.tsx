@@ -17,19 +17,26 @@ export const n2k = (num: number | string): string => {
   const numStr = String(num);
   if (!/^-?\d+$/.test(numStr)) return "";
   const value = Number(numStr);
-  if (!Number.isInteger(value) || value < 0 || value > 100) return "";
+  if (!Number.isInteger(value) || value < 0 || value > 1000) return "";
   if (value === 0) return "零";
-  if (value === 100) return "百";
+  if (value === 1000) return "千";
   const kanji = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
   if (value < 10) {
     return kanji[value];
   }
-  const tens = Math.floor(value / 10);
+  const hundreds = Math.floor(value / 100);
+  const tens = Math.floor((value % 100) / 10);
   const ones = value % 10;
   let result = "";
-  if (tens === 1) result += "十";
-  else result += `${kanji[tens]}十`;
-  if (ones > 0) result += kanji[ones];
+  if (hundreds > 0) {
+    result += hundreds === 1 ? "百" : `${kanji[hundreds]}百`;
+  }
+  if (tens > 0) {
+    result += tens === 1 ? "十" : `${kanji[tens]}十`;
+  }
+  if (ones > 0) {
+    result += kanji[ones];
+  }
   return result;
 };
 
