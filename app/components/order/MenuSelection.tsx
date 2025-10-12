@@ -78,13 +78,16 @@ export default function MenuSelection({
                   );
                 })();
 
+                const soldOut = item.id === "giiku-ten";
                 return (
                   <label
                     key={item.id}
                     className={`flex items-start gap-3 border p-4 transition active:scale-[0.99] ${
-                      selectedMenuId === item.id
-                        ? "cursor-pointer border-blue-600 ring-2 ring-blue-600/20"
-                        : "cursor-pointer border-gray-300"
+                      soldOut
+                        ? "cursor-not-allowed border-gray-200 bg-gray-50 opacity-60"
+                        : selectedMenuId === item.id
+                          ? "cursor-pointer border-blue-600 ring-2 ring-blue-600/20"
+                          : "cursor-pointer border-gray-300"
                     } ${
                       selectedMenuId === item.id && emphasis
                         ? "animate__animated animate__infinite animate__tada"
@@ -97,6 +100,8 @@ export default function MenuSelection({
                       className="mt-1 h-5 w-5 accent-blue-600"
                       checked={selectedMenuId === item.id}
                       onChange={() => onSelect(item.id)}
+                      disabled={soldOut}
+                      aria-disabled={soldOut}
                     />
                     <div className="flex-1">
                       <div className="font-semibold">
@@ -107,6 +112,11 @@ export default function MenuSelection({
                           </span>
                         )}
                         味
+                        {soldOut && (
+                          <span className="ml-2 rounded bg-gray-300 px-2 py-0.5 text-xs text-gray-700">
+                            売り切れ
+                          </span>
+                        )}
                       </div>
                       {highlightedDescription && (
                         <div className="text-sm text-worst-primary">
